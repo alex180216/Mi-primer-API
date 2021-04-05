@@ -1,9 +1,11 @@
 const Tarea = require('./store')
-const {success, error} = require('../network/response')
+const {success, error} = require('../../network/response')
 
 //obtener todas las tareas
 const findAllTasks = async (req, res)=>{
     const listaTareas = await Tarea.find()
+    .populate({path:'user', model:'User'})
+    .exec()
     success(req, res, listaTareas, 200)
 }
 
@@ -19,7 +21,8 @@ const createNewTask = async (req, res)=>{
             const nuevaTarea = new Tarea({
                 title:req.body.title,
                 description:req.body.description,
-                done: req.body.done ? req.body.done : false
+                done: req.body.done ? req.body.done : false,
+                user:req.body.user
             })
             const taskSaved = await nuevaTarea.save()
             //console.log(nuevaTarea)

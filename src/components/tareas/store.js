@@ -13,10 +13,18 @@ const taskSchema = new Schema ({
     done:{
         type:Boolean,
         default:false
+    },
+    user:{
+        type:Schema.Types.ObjectId,
+        ref:'User',
+        require:true,
+        //autopopulate:true
     }
 },{
     versionKey: false,
     timestamps:true
 })
+
+//taskSchema.plugin(require('mongoose-autopopulate'));
 
 module.exports = model('Task', taskSchema)
