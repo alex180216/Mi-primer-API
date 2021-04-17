@@ -9,11 +9,11 @@ const addNewUser = async (req, res) =>{
         const nuevoUsuario = new Usuario({
             userName: req.body.userName
         })
-     
+        
         const userSaved = await nuevoUsuario.save()
 
         if(userSaved != null){
-            success(req, res,`Usuario creado correctamente: ${userSaved.nombre}`, 201)
+            success(req, res,`Usuario creado correctamente: ${userSaved.userName}`, 201)
         }else{
             error(req, res, 'Error al crear al usuario', 404)
         }

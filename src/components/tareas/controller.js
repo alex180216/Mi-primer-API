@@ -5,6 +5,7 @@ const {success, error} = require('../../network/response')
 const findAllTasks = async (req, res)=>{
     const listaTareas = await Tarea.find()
     .populate({path:'user', model:'User'})
+    .populate({path:'chat', model:'Chat'})
     .exec()
     success(req, res, listaTareas, 200)
 }
@@ -12,25 +13,31 @@ const findAllTasks = async (req, res)=>{
 //Crear tarea nueva
 const createNewTask = async (req, res)=>{
     if(req.query.error == 'ok'){
-        error(req, res, 'Error en los parametros de la url', 404)
+        error(req, res, 'Error en los parametros de la url', 500)
         console.log('===============Error en el query===================')
     }else{
-        if(!req.body.title || !req.body.description){
-            error(req, res, 'Faltan datos para crear la tarea', 400)
+        if(!req.body.title || !req.body.description || !req.body.user){
+            error(req, res, 'Faltan datos para crear la tarea', 500)
         }else{
-            const nuevaTarea = new Tarea({
-                title:req.body.title,
-                description:req.body.description,
-                done: req.body.done ? req.body.done : false,
-                user:req.body.user
-            })
-            const taskSaved = await nuevaTarea.save()
-            //console.log(nuevaTarea)
-            if(taskSaved != null){
-                success(req, res,`Tarea creada correctamente: ${taskSaved.title}`, 201)
+            if(req.body.chat){
+                const nuevaTarea = new Tarea({
+                    title:req.body.title,
+                    description:req.body.description,
+                    done: req.body.done ? req.body.done : false,
+                    user:req.body.user,
+                    chat:req.body.chat
+                })
+                const taskSaved = await nuevaTarea.save()
+                //console.log(nuevaTarea)
+                if(taskSaved != null){
+                    success(req, res,`Tarea creada correctamente: ${taskSaved.title}`, 201)
+                }else{
+                    error(req, res, 'Error al crear la tarea', 500)
+                }
             }else{
-                error(req, res, 'Error al crear la tarea', 404)
+                error(req, res, 'La tarea debe estar asociada a un chat', 500)
             }
+            
         }
     }
     res.send('obteniendo lista de tareas')

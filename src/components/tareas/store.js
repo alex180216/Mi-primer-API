@@ -19,6 +19,11 @@ const taskSchema = new Schema ({
         ref:'User',
         require:true,
         //autopopulate:true
+    },
+    chat:{
+        type:Schema.Types.ObjectId,
+        ref:'Chat',
+        require:true,
     }
 },{
     versionKey: false,
