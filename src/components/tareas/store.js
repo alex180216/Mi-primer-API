@@ -24,6 +24,10 @@ const taskSchema = new Schema ({
         type:Schema.Types.ObjectId,
         ref:'Chat',
         require:true,
+    },
+    file:{
+        type:String,
+        default:''
     }
 },{
     versionKey: false,

@@ -1,5 +1,6 @@
 const Tarea = require('./store')
 const {success, error} = require('../../network/response')
+const {LOCAL_URL, PORT} = require('../../config')
 
 //obtener todas las tareas
 const findAllTasks = async (req, res)=>{
@@ -20,12 +21,18 @@ const createNewTask = async (req, res)=>{
             error(req, res, 'Faltan datos para crear la tarea', 500)
         }else{
             if(req.body.chat){
+
+                let fileURL = ''
+                if(req.file){
+                    fileURL = `${LOCAL_URL}${PORT}/uploads/${req.file.filename}`
+                }
                 const nuevaTarea = new Tarea({
                     title:req.body.title,
                     description:req.body.description,
                     done: req.body.done ? req.body.done : false,
                     user:req.body.user,
-                    chat:req.body.chat
+                    chat:req.body.chat,
+                    file:fileURL
                 })
                 const taskSaved = await nuevaTarea.save()
                 //console.log(nuevaTarea)
@@ -67,10 +74,34 @@ const deleteTaskByID = async (req, res) =>{
     }else{
         success(req, res, `La Tarea ${req.params.id} no existe`)
     }
-    
-    
-    
 }
+//Eliminar lista de tareas (byIdList)
+const deleteTaskList = async(req, res) =>{
+    if(!req.body.tasks||!Array.isArray(req.body.tasks)){
+        error(req, res, 'Lista de tareas a eliminar INVALIDA', 500)
+    }else{
+        if(req.body.tasks.length > 1){
+            for(let i=0; req.body.tasks.length-1; i++){
+                const tareaEncontrada = await Tarea.findById(req.body.tasks[i])
+                
+                if(tareaEncontrada != null){
+                    const listaTareasEliminadas = await Tarea.findByIdAndDelete(req.body.tasks[i])
+                    
+                    if(listaTareasEliminadas != null){
+                        success(req, res, `tareas eliminadas exitosamente`, 200)
+                    }else{
+                        error(req, res, 'Ha ocurrido un error al eliminar la lista', 500)
+                    }
+                }
+                
+            }
+            
+        }else{
+            error(req, res, 'Deben ser 2 o mas tareas a eliminar', 500)
+        }
+    }
+}
+
 //Obtener tareas realizadas (done:true)
 const getDoneTasks = async (req, res) =>{
     const listaTareasRealizadas = await Tarea.find({done: true})
@@ -122,4 +153,5 @@ module.exports = {
     getDoneTasks,
     updateTaskByID,
     updateDescriptionByID,
+    deleteTaskList
 }

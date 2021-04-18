@@ -1,20 +1,23 @@
 const express = require('express')
-const multer = require('multer')
 const router = express.Router()
+const {upload} = require('../../utils/filesMulter')
 const { 
     findAllTasks, createNewTask, findTaskByID, 
     deleteTaskByID, getDoneTasks, updateTaskByID,
-    updateDescriptionByID
+    updateDescriptionByID, deleteTaskList
 } = require('./controller')
+
 
 
 router.get('/getTasks', findAllTasks)
 
-router.post('/newTask', createNewTask)
+router.post('/newTask', upload.single('file'), createNewTask)
 
 router.get('/getTask/:id', findTaskByID)
 
 router.delete('/deleteTask/:id', deleteTaskByID)
+
+router.delete('/deleteTaskList', deleteTaskList)
 
 router.get('/getDoneTasks', getDoneTasks)
 
