@@ -1,7 +1,7 @@
 const config = require('./config')
 const mongoose = require('mongoose')
 
-const mongoDB = 'mongodb+srv://usuario_alex:<usuario_alex>@miprimerapinode.ua7e3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+const mongoDB = config.MONGODB_URI
 mongoose.Promise = global.Promise;
 async function connect(){
     await mongoose.connect(mongoDB, {useNewUrlParser:true,  useUnifiedTopology: true});
